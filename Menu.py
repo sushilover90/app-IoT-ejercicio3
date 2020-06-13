@@ -1,19 +1,19 @@
-import Interfaz
+import Interface
 import Cliente
 
 # clase Menu
 class Menu:
     def __init__(self):
         self.stop = False
-        self.interfaz = Interfaz.Interfaz()
+        self.interface = Interface.Interface()
 
     def agregarEmpresa(self):
         nombreEmpresa = input('Ingrese el nombre de la empresa:\n').upper()
         direccionEmpresa = input('Ingrese la dirección de la empresa:\n').upper()
         rfcEmpresa = input('Ingrese el rfc de la empresa:\n').upper()
 
-        self.interfaz.setEmpresa(nombreEmpresa, direccionEmpresa, rfcEmpresa)
-        ultimaEmpresa = self.interfaz.getLastEmpresa()
+        self.interface.setEmpresa(nombreEmpresa, direccionEmpresa, rfcEmpresa)
+        ultimaEmpresa = self.interface.getLastEmpresa()
 
         print(f'''
 
@@ -70,8 +70,8 @@ class Menu:
 
         elif _input.upper() == '2':
 
-            if len(self.interfaz.getEmpresas()) > 0:
-                for empresa in self.interfaz.getEmpresas():
+            if len(self.interface.getEmpresas()) > 0:
+                for empresa in self.interface.getEmpresas():
                     print(f'''
                     Empresa: {empresa.nombre}.
                     Direccion: {empresa.direccion}.

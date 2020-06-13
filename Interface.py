@@ -2,7 +2,7 @@ import Empresa
 
 
 # clase Interfaz
-class Interfaz:
+class Interface:
     def __init__(self):
         self.empresas = []
         self.empresasCount = len(self.empresas)
