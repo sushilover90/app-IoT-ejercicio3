@@ -4,6 +4,7 @@ import MysqlConnection
 
 # clase Interface
 class Interface:
+
     connection: None
 
     def __init__(self):
@@ -23,8 +24,12 @@ class Interface:
         return self.empresas
 
     def startConnection(self, eleccion: str):
+
         if eleccion == '1':
+
             self.connection = MysqlConnection.MysqlConnection.get_instance()
+            self.connection.set_connection('localhost','root','','ejercicio3')
+
             # esperando la clase de ubaldo
             # elif eleccion == '2':
             # self.connection = clase de ubaldo para mongodb
