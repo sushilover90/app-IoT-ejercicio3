@@ -97,6 +97,7 @@ class Menu:
 
         respuestaCorrecta = False
 
+
         while not respuestaCorrecta:
             _input = input('''
             ¿Qué base de datos desea utilizar?
@@ -104,9 +105,7 @@ class Menu:
             2) MongoDB
             ''').upper()
 
-            if _input == '1':
-                respuestaCorrecta = True
-            elif _input == '2':
+            if _input == '1' or _input == '2':
                 respuestaCorrecta = True
 
         self.interface.startConnection(_input)
