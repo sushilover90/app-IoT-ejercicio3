@@ -11,6 +11,9 @@ class Empresa:
         self.rfc = rfc
         self.id = id
 
+    def getId(self):
+        return self.id
+
     # traer los clientes de la instancia de la empresa
     def getClientes(self):
         return self.clientes

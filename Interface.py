@@ -6,14 +6,27 @@ import Cliente
 # clase Interface
 class Interface:
     connection: MysqlConnection.MysqlConnection
-    bd_election: str
 
     def __init__(self):
         self.empresas = []
         self.empresasCount = len(self.empresas)
+        self.clientes = []
 
-    def setEmpresa(self, nombreEmpresa: str, direccionEmpresa: str, rfcEmpresa: str):
-        empresa = Empresa.Empresa(str(self.empresasCount),nombreEmpresa,direccionEmpresa,rfcEmpresa)
+    def getEmpresaIndex(self) -> int:
+        return self.empresasCount
+
+    def getLastEmpresa(self) -> Empresa.Empresa:
+        return self.empresas[self.getEmpresaIndex()]
+
+    # agregando empresa
+    def setEmpresa(self, id: str, nombreEmpresa: str, direccionEmpresa: str, rfcEmpresa: str):
+
+        self.__startConnection()
+
+        empresa = Empresa.Empresa(id, nombreEmpresa, direccionEmpresa, rfcEmpresa)
+
+        self.connection.insert_empresa(empresa)
+
         self.empresas.append(empresa)
 
     # fetch empresas de la bd (mysql)
@@ -33,20 +46,32 @@ class Interface:
             # [1] = nombre
             # [2] = direccion
             # [3] = rfc
-            self.empresas.append(Empresa.Empresa(empresa[0],empresa[1],empresa[2],empresa[3]))
+            self.empresas.append(Empresa.Empresa(empresa[0], empresa[1], empresa[2], empresa[3]))
 
             _clientes = self.connection.fetch_clientes_empresa(empresa[0])
 
             for cliente in _clientes:
-
-                print(cliente)
-                self.empresas[i].setCliente(Cliente.Cliente(cliente[0],cliente[1],cliente[2],cliente[3]))
+                self.empresas[i].setCliente(Cliente.Cliente(cliente[1], cliente[2], cliente[3],cliente[0]))
 
             i += 1
 
         self.empresasCount = len(self.empresas)
 
-    def getEmpresa(self,id:str):
+    def prepareListClientes(self,cliente:Cliente.Cliente):
+
+        self.clientes.append(cliente)
+
+    def insertClientes(self,id_empresa:str):
+
+        self.__startConnection()
+
+        self.connection.insert_clientes_empresa(id_empresa,self.clientes)
+
+    def getListClientesLength(self)->int:
+
+        return len(self.clientes)
+
+    def getEmpresa(self, id: str):
 
         pass
 
@@ -56,11 +81,6 @@ class Interface:
 
         return self.empresas
 
-    def setDBElection(self, election: str):
-
-        self.bd_election = election
-
     def __startConnection(self):
 
-            self.connection = MysqlConnection.MysqlConnection.get_instance()
-
+        self.connection = MysqlConnection.MysqlConnection.get_instance()

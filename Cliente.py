@@ -1,6 +1,6 @@
 # clase Cliente
 class Cliente:
-    def __init__(self, id:str, nombre:str,direccion:str,rfc:str):
+    def __init__(self,nombre:str,direccion:str,rfc:str,id:str = None):
         self.id = id
         self.nombre = nombre
         self.direccion = direccion
@@ -16,7 +16,7 @@ class Cliente:
         return self.rfc
 
     def getDatos(self):
-        return f'Id cliente: {self.id}\n' \
-               f'Nombre cliente: {self.nombre}\n' \
-               f'Direccion cliente: {self.direccion}\n' \
-               f'RFC  cliente: {self.rfc}'
+        return f'\tId cliente: {self.id}\n' \
+               f'\tNombre cliente: {self.nombre}\n' \
+               f'\tDireccion cliente: {self.direccion}\n' \
+               f'\tRFC  cliente: {self.rfc}'

@@ -8,7 +8,7 @@ import Empresa
 class MysqlConnection:
     __instance__ = None
     _connection: mysql.connector = None
-    _cursor:MySQLFabricConnection
+    _cursor: MySQLFabricConnection
 
     def __init__(self):
         """ Constructor.
@@ -38,13 +38,13 @@ class MysqlConnection:
             database='ejercicio3'
         )
 
-    def __close_connection(self,cursor:MySQLFabricConnection):
+    def __close_connection(self, cursor: MySQLFabricConnection):
 
         if self._connection.is_connected():
             self._connection.close()
             cursor.close()
 
-    def fetch_empresas(self)->list:
+    def fetch_empresas(self) -> list:
 
         self.__set_connection()
 
@@ -60,15 +60,15 @@ class MysqlConnection:
 
         return empresas
 
-    def fetch_clientes_empresa(self,id_empresa:str)->list:
+    def fetch_clientes_empresa(self, id_empresa: str) -> list:
 
         self.__set_connection()
 
         cursor = self._connection.cursor()
 
-        sql_select_query_clientes_empresa = f'select c.id,c.nombre,c.direccion,c.rfc from empresa_cliente ec ' \
-                                            f'join empresa e on ec.empresa = e.id ' \
-                                            f'join cliente c on ec.cliente = c.id where e.id = {id_empresa}'
+        sql_select_query_clientes_empresa = f'select c.id,c.nombre,c.direccion,c.rfc from cliente c ' \
+                                            f'join empresa e on e.id = c.empresa ' \
+                                            f'where e.id = {id_empresa}'
 
         cursor.execute(sql_select_query_clientes_empresa)
 
@@ -77,3 +77,51 @@ class MysqlConnection:
         self.__close_connection(cursor)
 
         return clientes
+
+    def fetch_registered_empersa(self, id_empresa: str) -> list:
+
+        self.__set_connection()
+
+        cursor = self._connection.cursor()
+
+        sql_select_query_last_empresa = f'SELECT * FROM empresa where id = {id_empresa}'
+
+        cursor.execute(sql_select_query_last_empresa)
+
+        empresa = cursor.fetchall()
+
+        self.__close_connection(cursor)
+
+        return empresa
+
+    def insert_empresa(self, empresa: Empresa.Empresa):
+
+        self.__set_connection()
+
+        cursor = self._connection.cursor()
+
+        sql_insert_query_empresa = f'insert into empresa (nombre,direccion,rfc) ' \
+                                   f'values ("{empresa.getNombre()}","{empresa.getDireccion()}","{empresa.getNombre()}")'
+
+        cursor.execute(sql_insert_query_empresa)
+
+        self._connection.commit()
+
+        self.__close_connection(cursor)
+
+    def insert_cliente_empresa(self,id_empresa,cliente):
+
+
+        self.__set_connection()
+
+        cursor = self._connection.cursor()
+
+        sql_insert_cliente = f'insert into cliente (empresa,nombre,direccion,rfc) ' \
+                             f'values ({int(id_empresa)},"{cliente.getNombre()}","{cliente.getDireccion()}", ' \
+                             f'"{cliente.getRfc()}")'
+
+        cursor.execute(sql_insert_cliente)
+
+        self._connection.commit()
+
+        self.__close_connection(cursor)
