@@ -2,8 +2,9 @@ import Cliente
 
 # clase empresa
 class Empresa:
+
     # constructor
-    def __init__(self, nombre, direccion, rfc, id):
+    def __init__(self,id:str,nombre:str,direccion:str,rfc:str):
         self.clientes = []
         self.nombre = nombre
         self.direccion = direccion
@@ -33,3 +34,8 @@ class Empresa:
     def getCantidadClientes(self) -> int:
         return len(self.clientes)
 
+    def refreshClientes(self,clientes:[]):
+
+        self.clientes.clear()
+
+        self.clientes = clientes

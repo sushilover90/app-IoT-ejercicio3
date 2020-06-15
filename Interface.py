@@ -1,36 +1,66 @@
 import Empresa
 import MysqlConnection
+import Cliente
 
 
 # clase Interface
 class Interface:
-
-    connection: None
+    connection: MysqlConnection.MysqlConnection
+    bd_election: str
 
     def __init__(self):
         self.empresas = []
         self.empresasCount = len(self.empresas)
 
     def setEmpresa(self, nombreEmpresa: str, direccionEmpresa: str, rfcEmpresa: str):
-        empresa = Empresa.Empresa(nombreEmpresa, direccionEmpresa, rfcEmpresa, self.empresasCount)
+        empresa = Empresa.Empresa(str(self.empresasCount),nombreEmpresa,direccionEmpresa,rfcEmpresa)
         self.empresas.append(empresa)
 
-    def getLastEmpresa(self) -> Empresa:
-        ultimaEmpresa = self.empresas[self.empresasCount]
-        self.empresasCount += 1
-        return ultimaEmpresa
+    # fetch empresas de la bd (mysql)
+    def refreshEmpresas(self):
+
+        self.__startConnection()
+
+        _empresas = self.connection.fetch_empresas()
+
+        # refresh lista empresas
+        self.empresas.clear()
+
+        i = 0
+        for empresa in _empresas:
+
+            # [0] = id
+            # [1] = nombre
+            # [2] = direccion
+            # [3] = rfc
+            self.empresas.append(Empresa.Empresa(empresa[0],empresa[1],empresa[2],empresa[3]))
+
+            _clientes = self.connection.fetch_clientes_empresa(empresa[0])
+
+            for cliente in _clientes:
+
+                print(cliente)
+                self.empresas[i].setCliente(Cliente.Cliente(cliente[0],cliente[1],cliente[2],cliente[3]))
+
+            i += 1
+
+        self.empresasCount = len(self.empresas)
+
+    def getEmpresa(self,id:str):
+
+        pass
 
     def getEmpresas(self):
+
+        self.refreshEmpresas()
+
         return self.empresas
 
-    def startConnection(self, eleccion: str):
+    def setDBElection(self, election: str):
 
-        if eleccion == '1':
+        self.bd_election = election
+
+    def __startConnection(self):
 
             self.connection = MysqlConnection.MysqlConnection.get_instance()
-            self.connection.set_connection('localhost','root','','ejercicio3')
 
-            # esperando la clase de ubaldo
-            # elif eleccion == '2':
-            # self.connection = clase de ubaldo para mongodb
-            pass
