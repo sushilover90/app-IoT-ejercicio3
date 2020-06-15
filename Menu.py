@@ -103,7 +103,7 @@ class Menu:
                 nombre_producto = input('Ingrese el nombre del producto:\n').upper()
                 precio_base = input('Ingrese el precio base del producto. Ej: 100.50:\n')
                 precio_base.replace('$', '')
-                precio_base.replace(',', '')
+                precio_base.replace(',', '.')
 
                 self.interface.add_producto(nombre_producto,float(precio_base))
 
