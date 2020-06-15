@@ -90,7 +90,7 @@ class Menu:
                 respuestaCorrecta = False
 
                 while not respuestaCorrecta:
-                    _input = input('Desea seguir agregando más clientes(S/N):\n').upper()
+                    _input = input('Desea seguir agregando más productos(S/N):\n').upper()
 
                     if _input == 'N':
                         cancelar = True
