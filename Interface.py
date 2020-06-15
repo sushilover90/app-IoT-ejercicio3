@@ -1,6 +1,7 @@
 import Empresa
 import MysqlConnection
 import Cliente
+import Producto
 
 
 # clase Interface
@@ -11,26 +12,35 @@ class Interface:
         self.empresas = []
         self.empresasCount = len(self.empresas)
         self.clientes = []
+        self.productos = []
 
-    def getEmpresaIndex(self) -> int:
+    def get_empresa_index(self) -> int:
         return self.empresasCount
 
-    def getLastEmpresa(self) -> Empresa.Empresa:
-        return self.empresas[self.getEmpresaIndex()]
+    def get_last_empresa(self) -> Empresa.Empresa:
+        return self.empresas[self.get_empresa_index()]
 
     # agregando empresa
-    def setEmpresa(self, id: str, nombreEmpresa: str, direccionEmpresa: str, rfcEmpresa: str):
+    def add_empresa(self, nombreEmpresa: str, direccionEmpresa: str, rfcEmpresa: str):
 
         self.__startConnection()
 
-        empresa = Empresa.Empresa(id, nombreEmpresa, direccionEmpresa, rfcEmpresa)
+        empresa = Empresa.Empresa(nombreEmpresa, direccionEmpresa, rfcEmpresa)
 
         self.connection.insert_empresa(empresa)
 
         self.empresas.append(empresa)
 
+    def add_producto(self, nombre_producto:str, precio_base:float):
+
+        self.__startConnection()
+
+        producto = Producto.Producto(nombre_producto,precio_base)
+
+        self.connection.insert_producto(producto)
+
     # fetch empresas de la bd (mysql)
-    def refreshEmpresas(self):
+    def refresh_empresas(self):
 
         self.__startConnection()
 
@@ -46,41 +56,60 @@ class Interface:
             # [1] = nombre
             # [2] = direccion
             # [3] = rfc
-            self.empresas.append(Empresa.Empresa(empresa[0], empresa[1], empresa[2], empresa[3]))
+            self.empresas.append(Empresa.Empresa(empresa[1], empresa[2], empresa[3],empresa[0]))
 
             _clientes = self.connection.fetch_clientes_empresa(empresa[0])
 
             for cliente in _clientes:
-                self.empresas[i].setCliente(Cliente.Cliente(cliente[1], cliente[2], cliente[3],cliente[0]))
+                self.empresas[i].set_cliente(Cliente.Cliente(cliente[1], cliente[2], cliente[3], cliente[0]))
 
             i += 1
 
         self.empresasCount = len(self.empresas)
 
-    def prepareListClientes(self,cliente:Cliente.Cliente):
+    def prepare_list_clientes(self, cliente: Cliente.Cliente):
 
         self.clientes.append(cliente)
 
-    def insertClientes(self,id_empresa:str):
-
-        self.__startConnection()
-
-        self.connection.insert_clientes_empresa(id_empresa,self.clientes)
-
-    def getListClientesLength(self)->int:
+    def get_list_clientes_length(self) -> int:
 
         return len(self.clientes)
 
-    def getEmpresa(self, id: str):
+    def get_empresa(self, id: str):
 
         pass
 
-    def getEmpresas(self):
+    def get_empresas(self):
 
-        self.refreshEmpresas()
+        self.refresh_empresas()
 
         return self.empresas
+
+    def get_productos(self):
+
+        self.refresh_productos()
+
+        return self.productos
 
     def __startConnection(self):
 
         self.connection = MysqlConnection.MysqlConnection.get_instance()
+
+    def refresh_productos(self):
+
+        self.__startConnection()
+
+        productos = self.connection.fetch_productos()
+
+        self.productos.clear()
+
+        for producto in productos:
+            # [0] id
+            # [1] nombre
+            # [2] precio_base
+            self.productos.append(Producto.Producto(producto[1], float(producto[2]), producto[0]))
+
+    def get_cliente_instance(self, nombre_cliente: str, direccion_cliente: str, rfc_cliente: str,
+                             _id: str = None) -> Cliente.Cliente:
+
+        return Cliente.Cliente(nombre_cliente, direccion_cliente, rfc_cliente, _id)

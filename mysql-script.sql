@@ -36,7 +36,6 @@ create table detalle_compra(
 id bigint primary key auto_increment,
 compra bigint,
 producto bigint,
-precio_base double(10,2),
 impuesto double(2,2),
 descuento double(2,2),
 cantidad bigint,

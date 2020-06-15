@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector.fabric.connection import MySQLFabricConnection
 import Cliente
 import Empresa
+import Producto
 
 
 class MysqlConnection:
@@ -78,7 +79,7 @@ class MysqlConnection:
 
         return clientes
 
-    def fetch_registered_empersa(self, id_empresa: str) -> list:
+    def fetch_registered_empresa(self, id_empresa: str) -> list:
 
         self.__set_connection()
 
@@ -94,6 +95,22 @@ class MysqlConnection:
 
         return empresa
 
+    def fetch_productos(self)->list:
+
+        self.__set_connection()
+
+        cursor = self._connection.cursor()
+
+        sql_select_query_producto = 'select * from producto'
+
+        cursor.execute(sql_select_query_producto)
+
+        productos = cursor.fetchall()
+
+        self.__close_connection(cursor)
+
+        return productos
+
     def insert_empresa(self, empresa: Empresa.Empresa):
 
         self.__set_connection()
@@ -101,7 +118,7 @@ class MysqlConnection:
         cursor = self._connection.cursor()
 
         sql_insert_query_empresa = f'insert into empresa (nombre,direccion,rfc) ' \
-                                   f'values ("{empresa.getNombre()}","{empresa.getDireccion()}","{empresa.getNombre()}")'
+                                   f'values ("{empresa.get_nombre()}","{empresa.get_direccion()}","{empresa.get_nombre()}")'
 
         cursor.execute(sql_insert_query_empresa)
 
@@ -109,7 +126,7 @@ class MysqlConnection:
 
         self.__close_connection(cursor)
 
-    def insert_cliente_empresa(self,id_empresa,cliente):
+    def insert_cliente_empresa(self,id_empresa,cliente:Cliente.Cliente):
 
 
         self.__set_connection()
@@ -121,6 +138,21 @@ class MysqlConnection:
                              f'"{cliente.getRfc()}")'
 
         cursor.execute(sql_insert_cliente)
+
+        self._connection.commit()
+
+        self.__close_connection(cursor)
+
+    def insert_producto(self,producto:Producto.Producto):
+
+        self.__set_connection()
+
+        cursor = self._connection.cursor()
+
+        sql_insert_producto = f'insert into producto (nombre,precio_base) ' \
+                              f'values ("{producto.get_nombre()}",{producto.get_precio_base()})'
+
+        cursor.execute(sql_insert_producto)
 
         self._connection.commit()
 
