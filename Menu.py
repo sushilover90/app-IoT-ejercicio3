@@ -132,8 +132,26 @@ class Menu:
             4) Salir
         ''')
 
+    def getDBPrompt(self):
+
+        respuestaCorrecta = False
+
+
+        while not respuestaCorrecta:
+            _input = input('''
+            ¿Qué base de datos desea utilizar?
+            1) Mysql
+            2) MongoDB
+            ''').upper()
+
+            if _input == '1' or _input == '2':
+                respuestaCorrecta = True
+
+        self.interface.startConnection(_input)
+
     def run(self):
         while not self.stop:
+            self.getDBPrompt()
             self.getMenu()
             self.setOperacion()
 
