@@ -1,11 +1,13 @@
 import Interface
 import Cliente
+from ConexionMongo import mongoConexion
 
 # clase Menu
 class Menu:
     def __init__(self):
         self.stop = False
         self.interface = Interface.Interface()
+        self.mongo = mongoConexion()
 
     def agregarEmpresa(self):
         nombreEmpresa = input('Ingrese el nombre de la empresa:\n').upper()
@@ -23,9 +25,13 @@ class Menu:
 
         ''')
 
-        self.agregarClientesEmpresa(ultimaEmpresa)
+        empresa = self.mongo.guardarEmpresa(nombreEmpresa,direccionEmpresa,rfcEmpresa)
 
-    def agregarClientesEmpresa(self, empresaAgregarClientes):
+        #self.mongo.guardarClient(nombre,direccion,rfc)
+        print(empresa['_id'])
+        self.agregarClientesEmpresa(ultimaEmpresa, empresa['_id'])
+
+    def agregarClientesEmpresa(self, empresaAgregarClientes, idempresa ):
 
         stopLlenadoClientes = False
         empresa = empresaAgregarClientes
@@ -60,6 +66,7 @@ class Menu:
                 {cliente.getDatos()}
 
                 ''')
+                self.mongo.guardarClient(nombreCliente, direccionCliente, rfcCliente, idempresa)
 
     def setOperacion(self):
         _input = input()
@@ -82,6 +89,37 @@ class Menu:
                 print('No hay empresas registradas. Regístre una/varias empresa(s) antes de visualizarla(s).')
 
         elif _input.upper() == '3':
+            cancelar = False
+
+            while not cancelar:
+                continuar = False
+                while not continuar:
+                    nombreCliente = input('Ingrese el nombre del cliente:\n')
+
+                    cliente = self.mongo.verificarCliente(nombreCliente)
+
+                    if cliente[0]:
+                        continuar = True
+                    else:
+                        print('Cliente no existe')
+                        continuar = False
+
+                listoProducto = False
+                productosComprados = []
+                while not listoProducto:
+                    self.mongo.mostrarProduco()
+                    producto = input('Ingrese el nombre del producto a comprar:\n')
+                    productosComprados.append(producto)
+                    condicion = input('Desea comprar mas productos?: (s/n)\n').upper()
+
+                    if condicion == 'n' or condicion == 'N':
+                        listoProducto = True
+                        cancelar = True
+                    elif condicion == 's' or condicion == 'S':
+                        listoProducto = False
+            self.mongo.comprarProducto(cliente[1], productosComprados)
+
+        elif _input.upper() == '4':
             self.stop = True
             print('Adios')
 
@@ -90,7 +128,8 @@ class Menu:
             ¿Qué desea hacer? Ingrese el numero para
             1) Agregar empresa
             2) Imprimir empresas
-            3) Salir
+            3) Comprar productos
+            4) Salir
         ''')
 
     def run(self):
